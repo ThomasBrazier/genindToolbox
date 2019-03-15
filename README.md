@@ -2,7 +2,10 @@
 
 Some tools to export genind object (adegenet R package) into other formats (e.g. STRUCTURE input files, GENEPOP format).
 
- ## DESCRIPTION
+--------------------------------
+ ## genind2structure
+ 
+ ### DESCRIPTION
 
  R function to export to STRUCTURE format from genind object. 'genind' objects are created in the R package adegenet.
 
@@ -24,10 +27,10 @@ Some tools to export genind object (adegenet R package) into other formats (e.g.
  
  7. Genotype Data (Required; integer) Each allele at a given locus should be coded by a unique integer (eg microsatellite repeat score).
 
- ## USAGE
+ ### USAGE
  genind2structure(obj, file="", pops=FALSE, missingdata.label=-9, popflag=NA, locdata=NA, phenotype=NA, extra=NA)
 
-## ARGUMENTS
+### ARGUMENTS
  obj: a genind object to convert
  
  file: file name to write
@@ -50,6 +53,6 @@ Some tools to export genind object (adegenet R package) into other formats (e.g.
  
  genind2structure(nancycats, file="nancy_structure.txt", pops=TRUE)
 
- ## VALUE
+ ### VALUE
 
  Return either a data.frame if file="", or write the data.frame into the file given in argument.
