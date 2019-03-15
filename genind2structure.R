@@ -11,10 +11,14 @@
 # Supervisor: Scott McCairns
 #             INRA UMR ESE
 
-#==========================================================
-# FUNCTION genind2str
-#==========================================================
+# Lindsay V. Clark, 26 July 2015, initiated a genind2structure function, basic yet efficient, with some features lacking
+# (e.g. popflags, locdata, phenotype or extra data, control of data type and dependencies, export as file OR data.frame)
+# https://github.com/lvclark/R_genetics_conv/blob/master/genind2structure.R
+# Here are some improvements of this first function for personal use...
 
+#==========================================================
+# FUNCTION genind2structure
+#==========================================================
 
 #---------------------------------------------------------
 # DESCRIPTION
@@ -81,9 +85,9 @@ genind2structure = function(obj, file="", pops=FALSE, missingdata.label=-9, popf
     stop("Function was designed for genind objects.")
   }
   
-  # get the max ploidy of the dataset
+  # Get the max ploidy of the dataset
   ploidy = max(obj@ploidy)
-  # get the number of individuals
+  # Get the number of individuals
   Nind = nInd(obj)
   
   #-------------------------
@@ -157,18 +161,6 @@ genind2structure = function(obj, file="", pops=FALSE, missingdata.label=-9, popf
   # 6. ADD EXTRA COLUMN
   if (all(!is.na(extra))) {
     if (is.character(extra)) {
-      if (length(extra)==nrow(tab)) {
-        tab=cbind(tab, data.frame(extra=rep(extra, each=ploidy)))
-      } else {
-        warning("Not as many extra informations as individuals")
-      }
-    } else {
-      warning("Extra information is not a character vector")
-    }
-  }
-  
-  if (all(!is.na(extra))) {
-    if (is.character(extra)) {
       if (length(extra)==Nind) {
         tab=cbind(tab, data.frame(extra=rep(extra, each=ploidy))) # extras need to be replicated given the ploidy level
       } else {
@@ -188,7 +180,6 @@ genind2structure = function(obj, file="", pops=FALSE, missingdata.label=-9, popf
   loci = locNames(obj) 
   # add columns for genotypes
   tab = cbind(tab, matrix(missingdata.label, nrow=dim(tab)[1], ncol=nLoc(obj), dimnames=list(NULL,loci)))
-  # begin going through loci
   for(L in loci){
     gen = obj@tab[,grep(paste("^", L, "\\.", sep=""), 
                               dimnames(obj@tab)[[2]]), 
@@ -204,7 +195,7 @@ genind2structure = function(obj, file="", pops=FALSE, missingdata.label=-9, popf
   }
 
   #-------------------------------
-  # export table as a file (if no filename specified, then tab is returned at the end of the function)
+  # export table as a file (if no filename specified, then tab is returned as a data frame at the end of the function)
   if (file != "") {
     if (system=="unix") {
       write.table(tab, file=file, sep="\t", quote=FALSE, row.names=FALSE, col.names=FALSE, eol="\r")
