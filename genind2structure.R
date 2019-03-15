@@ -11,10 +11,6 @@
 # Supervisor: Scott McCairns
 #             INRA UMR ESE
 
-# Lindsay V. Clark, 26 July 2015, initiated a genind2structure function, basic yet efficient, with some features lacking
-# https://github.com/lvclark/R_genetics_conv/blob/master/genind2structure.R
-# Here is some improvements of this first function...
-
 #==========================================================
 # FUNCTION genind2str
 #==========================================================
@@ -40,7 +36,7 @@
 
 #---------------------------------------------------------
 # USAGE
-# genind2structure(obj, file="", pops=FALSE, missingdata.label=-9, popflag=NA, locdata=NA, phenotype=NA, extra=NA)
+# genind2structure(obj, file="", pops=FALSE, missingdata.label=-9, popflag=NA, locdata=NA, phenotype=NA, extra=NA, system="unix")
 
 #---------------------------------------------------------
 # ARGUMENTS
@@ -52,6 +48,7 @@
 # locdata: if locdata is not NA, then it is a a numeric vector of user-defined sampling locations
 # phenotype: if phenotype is not NA, then it is a numeric vector of phenotypes
 # extra: if extra is not NA, then it is a character vector with extra informations
+# system: "win" or "unix" (default). Information about the required file system encoding (STRUCTURE can be run on Windows or Unix system)
 
 # example use: 
 # data(nancycats)
@@ -65,7 +62,7 @@
 
 #---------------------------------------------------------
 genind2structure = function(obj, file="", pops=FALSE, missingdata.label=-9, popflag=NA, locdata=NA,
-                            phenotype=NA, extra=NA){
+                            phenotype=NA, extra=NA, system="unix") {
   # Dependencies
   if ('adegenet' %in% installed.packages()) {
     library('adegenet')
@@ -209,7 +206,17 @@ genind2structure = function(obj, file="", pops=FALSE, missingdata.label=-9, popf
   #-------------------------------
   # export table as a file (if no filename specified, then tab is returned at the end of the function)
   if (file != "") {
-    write.table(tab, file=file, sep="\t", quote=FALSE, row.names=FALSE, col.names=FALSE)
+    if (system=="unix") {
+      write.table(tab, file=file, sep="\t", quote=FALSE, row.names=FALSE, col.names=FALSE, eol="\r")
+    } else {
+      if (system=="win") {
+        write.table(tab, file=file, sep="\t", quote=FALSE, row.names=FALSE, col.names=FALSE, eol="\r\n")
+      } else {
+        write.table(tab, file=file, sep="\t", quote=FALSE, row.names=FALSE, col.names=FALSE, eol="\r")
+        warning("File system not recognised. End of lines have been encoded in Unix file system.")
+      }
+    }
+    
   } else {
     return(tab)
   }
